@@ -16,35 +16,56 @@ class StreamLitHelper:
         return data
     
     def days_per_week_hist(self, data, method_name):
-        data = data[(data['methodname'] == method_name)]
-        data['day_of_week'] = data['datetime'].dt.dayofweek 
-        day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-        histogram = data['day_of_week'].value_counts().reindex(range(5), fill_value=0)
-        histogram.index = pd.Categorical(histogram.index, categories=range(5), ordered=True)
-        histogram = histogram.sort_index()
-        day_names_dict = dict(enumerate(day_names))
-        histogram.index = histogram.index.map(day_names_dict)
-        st.bar_chart(histogram)
+        if method_name is None: 
+            data = data[(data['productionmode'] == 'true')]
+            data['day_of_week'] = data['datetime'].dt.dayofweek 
+            day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+            histogram = data['day_of_week'].value_counts().reindex(range(5), fill_value=0)
+            histogram.index = pd.Categorical(histogram.index, categories=range(5), ordered=True)
+            histogram = histogram.sort_index()
+            day_names_dict = dict(enumerate(day_names))
+            histogram.index = histogram.index.map(day_names_dict)
+            st.bar_chart(histogram)
+        else:
+            data = data[(data['methodname'] == method_name) & (data['productionmode'] == 'true')]
+            data['day_of_week'] = data['datetime'].dt.dayofweek 
+            day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+            histogram = data['day_of_week'].value_counts().reindex(range(5), fill_value=0)
+            histogram.index = pd.Categorical(histogram.index, categories=range(5), ordered=True)
+            histogram = histogram.sort_index()
+            day_names_dict = dict(enumerate(day_names))
+            histogram.index = histogram.index.map(day_names_dict)
+            st.bar_chart(histogram)
 
     def get_production_run_count(self, data, target_column_name, target_value):
-        count = len(data[(data['productionmode'] == 'true') & (data[target_column_name] == target_value)])
+        if target_column_name is None and target_value is None:
+            count = len(data[(data['productionmode'] == 'true')])
+        else: 
+            count = len(data[(data['productionmode'] == 'true') & (data[target_column_name] == target_value)])
         return count
 
     def get_successful_run_count(self, data, target_column_name, target_value):
-        count = len(data[(data['productionmode'] == 'true') & (data['successfulrun'] == 'true') & (data[target_column_name] == target_value)])
+        if target_column_name is None and target_value is None:
+            count = len(data[(data['productionmode'] == 'true') & (data['successfulrun'] == 'true')])
+        else:
+            count = len(data[(data['productionmode'] == 'true') & (data['successfulrun'] == 'true') & (data[target_column_name] == target_value)])
         return count
     
     def get_first_prod_date(self, data):
         data = data[(data['productionmode'] == 'true')]
+        data = data.sort_values(by='datetime')
         data['dates'] = data['datetime'].dt.date
         first_prod_date = data.iloc[0]['dates']
         return first_prod_date
     
     def get_last_prod_date(self, data):
         data = data[(data['productionmode'] == 'true')]
+        data = data.sort_values(by='datetime')
         data['dates'] = data['datetime'].dt.date
         first_prod_date = data.iloc[-1]['dates']
         return first_prod_date
+    
+
     
     # depreciated
     # def get_column_names(self, database_filepath, table_name) -> []:
