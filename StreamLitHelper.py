@@ -15,7 +15,7 @@ class StreamLitHelper:
         conn.close()
         return data
     
-    def days_per_week_hist(self, data, method_name):
+    def runs_by_day_hist(self, data, method_name):
         if method_name is None: 
             data = data[(data['productionmode'] == 'true')]
             data['day_of_week'] = data['datetime'].dt.dayofweek 
@@ -35,6 +35,28 @@ class StreamLitHelper:
             histogram = histogram.sort_index()
             day_names_dict = dict(enumerate(day_names))
             histogram.index = histogram.index.map(day_names_dict)
+            st.bar_chart(histogram)
+
+    def runs_by_hour_hist(self, data, method_name):
+        if method_name is None: 
+            data = data[(data['productionmode'] == 'true')]
+            data['hour'] = data['datetime'].dt.hour
+            hours = [str(i) for i in range(1, 25)]
+            histogram = data['hour'].value_counts().reindex(range(24), fill_value=0)
+            histogram.index = pd.Categorical(histogram.index, categories=range(24), ordered=True)
+            histogram = histogram.sort_index()
+            hour_names_dict = dict(enumerate(hours))
+            histogram.index = histogram.index.map(hour_names_dict)
+            st.bar_chart(histogram)
+        else:
+            data = data[(data['methodname'] == method_name) & (data['productionmode'] == 'true')]
+            data['hour'] = data['datetime'].dt.hour
+            hours = [str(i) for i in range(1, 25)]
+            histogram = data['hour'].value_counts().reindex(range(24), fill_value=0)
+            histogram.index = pd.Categorical(histogram.index, categories=range(24), ordered=True)
+            histogram = histogram.sort_index()
+            hour_names_dict = dict(enumerate(hours))
+            histogram.index = histogram.index.map(hour_names_dict)
             st.bar_chart(histogram)
 
     def get_production_run_count(self, data, target_column_name, target_value):

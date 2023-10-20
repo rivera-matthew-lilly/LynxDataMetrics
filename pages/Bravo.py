@@ -14,13 +14,16 @@ home_tab, mix_tab, norm_tab = st.tabs(['Home', 'DNA Mixing', 'Normalization'])
 with home_tab:
     wg.display_metrics_line(self=wg, data=data, method_name=None)
     wg.display_runs_by_day(self=wg, data=data, method_name=None)
+    wg.display_runs_by_hour(self=wg, data=data, method_name=None)
 
 with mix_tab:
     method_name = "Biologica_DNA_Miniprep_Mixing_V3,0(MJR)"
     wg.display_metrics_line(self=wg, data=data, method_name=method_name)
     wg.display_runs_by_day(self=wg, data=data, method_name=method_name)
+    wg.display_runs_by_hour(self=wg, data=data, method_name=method_name)
 
 with norm_tab:
     method_name = "Biologica_Normalization_V3,0(MJR)"
     wg.display_metrics_line(self=wg, data=data, method_name=method_name)
     wg.display_runs_by_day(self=wg, data=data, method_name=method_name)
+    wg.display_runs_by_hour(self=wg, data=data, method_name=method_name)
